@@ -39,6 +39,9 @@ group :development, :test do
   gem 'pry-rails' # 追加
   gem 'rubocop-rails' # 追加
   gem 'rubocop-rspec' # 追加
+  gem 'rspec-rails', '~> 5.0.0'
+  gem 'faker'
+  gem 'factory_bot_rails'
 end
 
 group :development do
