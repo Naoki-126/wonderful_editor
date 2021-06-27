@@ -20,5 +20,14 @@
 require "rails_helper"
 
 RSpec.describe Article, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  context "ユーザー、タイトル、本文が入力されているとき" do
+    let(:user) { create(:user) }
+    let(:article) { build(:article, user_id: user.id) }
+
+    it "記事が作成できる" do
+      # article = FactoryBot.buld(:article)
+      # article = Article.new(title: "test", body: "test_body", user_id: 1)
+      expect(article).to be_valid
+    end
+  end
 end

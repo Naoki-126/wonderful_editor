@@ -22,5 +22,14 @@
 require "rails_helper"
 
 RSpec.describe Comment, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  context "ユーザー、記事が入力されているとき" do
+    let(:user) { create(:user) }
+    let(:article) { create(:article, user_id: user.id) }
+    let(:comment) { build(:comment, user_id: user.id, article_id: article.id) }
+
+    it "コメントが作成できる" do
+      # comment = FactoryBot.build(:comment)
+      expect(comment).to be_valid
+    end
+  end
 end

@@ -21,5 +21,14 @@
 require "rails_helper"
 
 RSpec.describe ArticleLike, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  context "ユーザー、記事が入力されているとき" do
+    let(:user) { create(:user) }
+    let(:article) { create(:article, user_id: user.id) }
+    let(:article_like) { build(:article_like, user_id: user.id, article_id: article.id) }
+
+    it "いいねが作成できる" do
+      # article_like = FactoryBot.build(:article_like)
+      expect(article_like).to be_valid
+    end
+  end
 end
