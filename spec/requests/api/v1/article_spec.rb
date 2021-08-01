@@ -90,7 +90,7 @@ RSpec.describe "Api::V1::Articles", type: :request do
     let(:params) { { article: attributes_for(:article) } }
 
     let(:current_user) { create(:user) }
-    # before { allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user) }
+    before { allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user) }
 
     context "自分が所持している記事のレコードを更新しようとするとき" do
       let(:article) { create(:article, user: current_user) }
