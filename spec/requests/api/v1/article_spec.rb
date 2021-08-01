@@ -24,6 +24,8 @@ RSpec.describe "Api::V1::Articles", type: :request do
   describe "GET /articles/:id" do
     subject { get(api_v1_article_path(article_id)) }
 
+    let!(:user) { create(:user) }
+
     context "指定したidの記事が存在する時" do
       let(:article_id) { article.id }
       let(:article) { create(:article) }
@@ -81,33 +83,34 @@ RSpec.describe "Api::V1::Articles", type: :request do
       end
     end
   end
+
+  describe "PATCH(PUT) /api/v1/:id" do
+    subject { patch(api_v1_article_path(article.id), params: params) }
+
+    let(:params) { { article: attributes_for(:article) } }
+
+    let(:current_user) { create(:user) }
+    # before { allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user) }
+
+    context "自分が所持している記事のレコードを更新しようとするとき" do
+      let(:article) { create(:article, user: current_user) }
+
+      it "任意のユーザーのレコードを更新出来る" do
+        expect { subject }.to change { article.reload.title }.from(article.title).to(params[:article][:title]) &
+                              change { article.reload.body }.from(article.body).to(params[:article][:body])
+
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "自分が所持していない記事のレコードを更新しようとするとき" do
+      let(:other_user) { create(:user) }
+      let!(:article) { create(:article, user: other_user) }
+
+      it "更新できない" do
+        expect { subject }.to raise_error(ActiveRecord::RecordNotFound) &
+                              change { Article.count }.by(0)
+      end
+    end
+  end
 end
-
-# RSpec.describe "Api::V1::Articles", type: :request do
-#   describe "GET /articles" do
-#     subject { get(api_v1_articles_path) }
-#     # pending "add some examples (or delete) #{__FILE__}"
-#     # 作成時間が異なる article を3つ作る
-
-#     let!(:article1) { create(:article, user_id: user.id) }
-#     let!(:article2) { create(:article, user_id: user.id) }
-#     let!(:article3) { create(:article, user_id: user.id) }
-#     let(:user) { create(:user)}
-
-#     fit "記事の一覧が取得できる" do
-#       # get api_v1_articles_path
-#       subject
-#       binding.pry
-#        # 作成した article のデータが全て返ってきているか（ article の作成時間をずらしたものを3つ作ってそれが3つとも返ってくるか）
-#        res = JSON.parse(response.body)
-#        expect(res.length).to eq 3
-#        expect(res[0].keys).to eq ["id","title","updated_at","user"]
-
-#       # article = FactoryBot.buld(:article)
-#       # article = Article.new(title: "test", body: "test_body", user_id: 1)
-#       # ステータスコードが 200 であること
-#       expect(response).to have_http_status(200)
-#     end
-#   end
-
-# end
