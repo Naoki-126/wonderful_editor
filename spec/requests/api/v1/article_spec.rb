@@ -10,7 +10,7 @@ RSpec.describe "Api::V1::Articles", type: :request do
 
     it "記事の一覧が取得出来る" do
       subject
-      # binding.pry
+
       res = JSON.parse(response.body)
 
       expect(response).to have_http_status(:ok)
@@ -30,7 +30,7 @@ RSpec.describe "Api::V1::Articles", type: :request do
 
       it "その詳細が取得出来る" do
         subject
-        # binding.pry
+
         res = JSON.parse(response.body)
         expect(res["id"]).to eq article.id
         expect(res["title"]).to eq article.title
@@ -47,8 +47,37 @@ RSpec.describe "Api::V1::Articles", type: :request do
       let(:article_id) { 10000 }
 
       it "記事が見つからない" do
-        # binding.pry
         expect { subject }.to raise_error ActiveRecord::RecordNotFound
+      end
+    end
+  end
+
+  describe "POST /articles" do
+    subject { post(api_v1_articles_path, params: params) }
+
+    context "適切なパラメーターを送信した時" do
+      let(:params) { { article: attributes_for(:article) } }
+      let(:current_user) { create(:user) }
+      # FactoyBotでuserを作成: 変数を currnt_user_stub
+
+      # stub
+      # before { allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user) }
+      # allow_any_instance_of(A:クラス名).to receive(B:メソッド名).and_return(C:戻り値)とするとAのインスタンスで、Bを呼び出した場合、Cを返す
+
+      it "ユーザーの記事を作成出来る" do
+        expect { subject }.to change { Article.where(user_id: current_user.id).count }.by(1)
+        res = JSON.parse(response.body)
+        expect(res["title"]).to eq params[:article][:title]
+        expect(res["body"]).to eq params[:article][:body]
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "不適切なパラメーターを送信した時" do
+      let(:params) { attributes_for(:article) }
+
+      it "エラーする" do
+        expect { subject }.to raise_error(NoMethodError)
       end
     end
   end

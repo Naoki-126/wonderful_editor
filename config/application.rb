@@ -33,17 +33,19 @@ module WonderfulEditor
     config.generators.system_tests = nil
 
     config.generators do |g|
-      g.template_engine false
-      g.javascripts false
-      g.stylesheets false
-      g.helper false
-      g.test_framework :rspec,
-                       view_specs: false,
-                       routing_specs: false,
-                       helper_specs: false,
-                       controller_specs: false,
-                       request_specs: true
+      g.template_engine false #  HTML を作成しない
+      g.javascripts false # javascripts ファイルを作成しない
+      g.stylesheets false # スタイルシート(CSS)を作成しない
+      g.helper false # helper を作成しない
+      g.test_framework :rspec, # テストファイルを作成する
+                       view_specs: false, # view の spec を作成しない
+                       routing_specs: false, # routing の spec を作成しない
+                       helper_specs: false, # helper の spec を作成しない
+                       controller_specs: false, # contoller の spec を作成しない
+                       fixtures: true, # factory_bot のファイルを作成する
+                       request_specs: true # request の spec を作成する
     end
     config.api_only = true
+    config.middleware.use ActionDispatch::Flash # CSRF 対策を OFF にする
   end
 end
