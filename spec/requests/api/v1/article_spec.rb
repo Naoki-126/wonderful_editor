@@ -84,18 +84,18 @@ RSpec.describe "Api::V1::Articles", type: :request do
     end
   end
 
-  describe "PATCH(PUT) /api/v1/:id" do
-    subject { patch(api_v1_article_path(article.id), params: params) }
+  describe "PATCH(PUT)/articles/:id" do
+    subject { patch(api_v1_article_path(article_id), params: params) }
 
     let(:params) { { article: attributes_for(:article) } }
-
     let(:current_user) { create(:user) }
     # before { allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user) }
 
-    context "自分が所持している記事のレコードを更新しようとするとき" do
+    context "任意の記事のレコードを更新しようとするとき" do
+      let(:article_id) { article.id }
       let(:article) { create(:article, user: current_user) }
 
-      it "任意のユーザーのレコードを更新出来る" do
+      it "任意の記事のレコードを更新出来る" do
         expect { subject }.to change { article.reload.title }.from(article.title).to(params[:article][:title]) &
                               change { article.reload.body }.from(article.body).to(params[:article][:body])
 
@@ -103,11 +103,40 @@ RSpec.describe "Api::V1::Articles", type: :request do
       end
     end
 
-    context "自分が所持していない記事のレコードを更新しようとするとき" do
+    context "所持していない記事のレコードを更新しようとするとき" do
       let(:other_user) { create(:user) }
+      let(:article_id) { article.id }
       let!(:article) { create(:article, user: other_user) }
 
       it "更新できない" do
+        # expect { subject }.to raise_error(ActiveRecord::RecordNotFound) &
+        #                       change { Article.count }.by(0)
+      end
+    end
+  end
+
+  describe "DELETE /articles/:id" do
+    subject { delete(api_v1_article_path(article_id)) }
+
+    let(:current_user) { create(:user) }
+    let(:article_id) { article.id }
+    # before { allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user) }
+
+    context "任意の記事を削除したい時" do
+      let!(:article) { create(:article, user: current_user) }
+
+      it "任意の記事のレコードを削除出来る" do
+        expect { subject }.to change { Article.count }.by(-1)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "任意の記事と違うレコードを削除する時" do
+      let(:other_user) { create(:user) }
+      let(:article_id) { article.id }
+      let!(:article) { create(:article, user: other_user) }
+
+      it "記事を削除できない" do
         # expect { subject }.to raise_error(ActiveRecord::RecordNotFound) &
         #                       change { Article.count }.by(0)
       end
