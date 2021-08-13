@@ -51,22 +51,34 @@ RSpec.describe "Api::V1::Auth::Sessions", type: :request do
     end
   end
 
-  # describe "DELETE /api/v1/auth/sign_out" do
-  #   subject { delete(destroy_api_v1_user_session_path, params: params, headers: headers) }
+  describe "DELETE /api/v1/auth/sign_out" do
+    subject { delete(destroy_api_v1_user_session_path, params: params, headers: headers) }
 
-  #   context "ユーザーがログインからログアウトする時" do
-  #     let(:user) { create(:user) }
-  #     let(:params) { attributes_for(:user) }
-  #     let!(:headers) { user.create_new_auth_token }
+    context "ユーザーがログインからログアウトする時" do
+      let(:user) { create(:user) }
+      let(:params) { attributes_for(:user) }
+      let!(:headers) { user.create_new_auth_token }
 
-  #     fit "トークンを無くしログアウト出来る" do
-  #       expect { subject }.to change { user.reload.tokens }.from(be_present).to(be_empty)
+      it "トークンを無くしログアウト出来る" do
+        subject
+        res = JSON.parse(response.body)
+        expect(res["success"]).to be_truthy
+        expect(user.reload.tokens).to be_blank
+        expect(response).to have_http_status(:ok)
+      end
+    end
 
-  #       res = JSON.parse(response.body)
-  #         expect(res["success"]).to be_truthy
-  #         expect(user.reload.tokens).to be_blank
-  #         expect(response).to have_http_status(:ok)
-  #     end
-  #   end
-  # end
+    context "ユーザーが誤った情報でログアウトする時" do
+      let(:user) { create(:user) }
+      let(:params) { attributes_for(:user) }
+      let!(:headers) { { "access-token" => "", "client" => "", "uid" => "" } }
+
+      it "ログアウト出来ない" do
+        subject
+        res = JSON.parse(response.body)
+        expect(res["errors"]).to include "User was not found or was not logged in."
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
 end
