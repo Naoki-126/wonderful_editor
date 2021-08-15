@@ -88,7 +88,7 @@ RSpec.describe "Api::V1::Articles", type: :request do
   end
 
   describe "PATCH(PUT)/articles/:id" do
-    subject { patch(api_v1_article_path(article_id), params: params, headers: headers) }
+    subject { patch(api_v1_article_path(article.id), params: params, headers: headers) }
 
     let(:params) { { article: attributes_for(:article) } }
     let(:current_user) { create(:user) }
@@ -96,7 +96,6 @@ RSpec.describe "Api::V1::Articles", type: :request do
     let(:headers) { current_user.create_new_auth_token }
 
     context "任意の記事のレコードを更新しようとするとき" do
-      let(:article_id) { article.id }
       let(:article) { create(:article, user: current_user) }
 
       it "任意の記事のレコードを更新出来る" do
@@ -112,7 +111,7 @@ RSpec.describe "Api::V1::Articles", type: :request do
       let!(:article) { create(:article, user: other_user) }
 
       it "更新できない" do
-        expect { subject }.to raise_error(NameError) &
+        expect { subject }.to raise_error(ActiveRecord::RecordNotFound) &
                               change { Article.count }.by(0)
       end
     end
