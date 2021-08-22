@@ -4,10 +4,11 @@
 #
 #  id         :bigint           not null, primary key
 #  body       :text
+#  status     :string           default("draft")
 #  title      :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  user_id    :bigint           not null
+#  user_id    :bigint
 #
 # Indexes
 #
@@ -20,9 +21,12 @@
 class Article < ApplicationRecord
   validates :title, presence: true
   validates :body, presence: true
-  validates :user_id, presence: true
+  # validates :user_id, presence: true
 
   belongs_to :user
   has_many :article_likes, dependent: :destroy
   has_many :comments, dependent: :destroy
+
+  enum status: { draft: "draft", published: "published" }
+  # validates :status, presence: true
 end

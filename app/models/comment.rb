@@ -6,8 +6,8 @@
 #  body       :text
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  article_id :bigint           not null
-#  user_id    :bigint           not null
+#  article_id :bigint
+#  user_id    :bigint
 #
 # Indexes
 #
@@ -20,8 +20,8 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Comment < ApplicationRecord
-  validates :user_id, presence: true
-  validates :article_id, presence: true
+  # validates :user_id, presence: true
+  # validates :article_id, presence: true
 
   belongs_to :user
   belongs_to :article
