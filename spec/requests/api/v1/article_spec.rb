@@ -122,7 +122,6 @@ RSpec.describe "Api::V1::Articles", type: :request do
 
     let(:current_user) { create(:user) }
     let(:article_id) { article.id }
-
     let(:headers) { current_user.create_new_auth_token }
 
     context "任意の記事を削除したい時" do

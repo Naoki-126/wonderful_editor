@@ -4,10 +4,11 @@
 #
 #  id         :bigint           not null, primary key
 #  body       :text
+#  status     :string           default("draft")
 #  title      :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  user_id    :bigint           not null
+#  user_id    :bigint
 #
 # Indexes
 #
@@ -20,14 +21,29 @@
 require "rails_helper"
 
 RSpec.describe Article, type: :model do
-  context "ユーザー、タイトル、本文が入力されているとき" do
-    let(:user) { create(:user) }
-    let(:article) { build(:article, user_id: user.id) }
+  context "タイトルと本文が入力されているとき" do
+    # let(:user) { create(:user) }
+    let(:article) { build(:article) }
 
-    it "記事が作成できる" do
-      # article = FactoryBot.buld(:article)
-      # article = Article.new(title: "test", body: "test_body", user_id: 1)
+    it "下書き状態の記事が作成できる" do
       expect(article).to be_valid
+      expect(article.status).to eq "draft"
+    end
+  end
+
+  context "status が下書き状態のとき" do
+    let(:article) { build(:article, :draft) }
+    it "記事を下書き状態で作成できる" do
+      expect(article).to be_valid
+      expect(article.status).to eq "draft"
+    end
+  end
+
+  context "status が公開状態のとき" do
+    let(:article) { build(:article, :published) }
+    it "記事を公開状態で作成できる" do
+      expect(article).to be_valid
+      expect(article.status).to eq "published"
     end
   end
 end

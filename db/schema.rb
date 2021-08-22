@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_14_221119) do
+ActiveRecord::Schema.define(version: 2021_08_17_214706) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -18,10 +18,12 @@ ActiveRecord::Schema.define(version: 2021_06_14_221119) do
   create_table "article_likes", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
+    # t.bigint "{:foreign_key=>true}_id"
     t.bigint "article_id", null: false
     t.index ["article_id"], name: "index_article_likes_on_article_id"
     t.index ["user_id"], name: "index_article_likes_on_user_id"
+    # t.index ["{:foreign_key=>true}_id"], name: "index_article_likes_on_{:foreign_key=>true}_id"
   end
 
   create_table "articles", force: :cascade do |t|
@@ -29,7 +31,8 @@ ActiveRecord::Schema.define(version: 2021_06_14_221119) do
     t.text "body"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
+    t.string "status", default: "draft"
     t.index ["user_id"], name: "index_articles_on_user_id"
   end
 
@@ -37,8 +40,8 @@ ActiveRecord::Schema.define(version: 2021_06_14_221119) do
     t.text "body"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.bigint "user_id", null: false
-    t.bigint "article_id", null: false
+    t.bigint "user_id"
+    t.bigint "article_id"
     t.index ["article_id"], name: "index_comments_on_article_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
@@ -67,7 +70,6 @@ ActiveRecord::Schema.define(version: 2021_06_14_221119) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
-  add_foreign_key "article_likes", "articles"
   add_foreign_key "article_likes", "users"
   add_foreign_key "articles", "users"
   add_foreign_key "comments", "articles"
