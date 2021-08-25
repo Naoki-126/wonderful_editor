@@ -19,8 +19,8 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Article < ApplicationRecord
-  validates :title, presence: true
-  validates :body, presence: true
+  # validates :title, presence: true
+  # validates :body, presence: true
   # validates :user_id, presence: true
 
   belongs_to :user
