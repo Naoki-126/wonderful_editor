@@ -18,8 +18,8 @@ ActiveRecord::Schema.define(version: 2021_08_17_214706) do
   create_table "article_likes", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.bigint "user_id", null: false
-    t.bigint "article_id", null: false
+    t.bigint "user_id"
+    t.bigint "article_id"
     t.index ["article_id"], name: "index_article_likes_on_article_id"
     t.index ["user_id"], name: "index_article_likes_on_user_id"
   end
@@ -68,6 +68,7 @@ ActiveRecord::Schema.define(version: 2021_08_17_214706) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
+  add_foreign_key "article_likes", "articles"
   add_foreign_key "article_likes", "users"
   add_foreign_key "articles", "users"
   add_foreign_key "comments", "articles"
